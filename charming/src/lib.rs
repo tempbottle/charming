@@ -327,6 +327,9 @@ pub struct Chart {
 
     #[serde(skip_serializing)]
     geo_maps: Vec<GeoMap>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    animation: Option<bool>,
 }
 
 impl Default for Chart {
@@ -366,6 +369,7 @@ impl Chart {
             aria: None,
             series: vec![],
             geo_maps: vec![],
+            animation: Some(false),
         }
     }
 
@@ -513,6 +517,11 @@ impl Chart {
         self.toolbox
             .as_ref()
             .and_then(|toolbox| toolbox.save_as_image_type())
+    }
+
+    pub fn animation(mut self, animation: bool) -> Self {
+        self.animation = Some(animation);
+        self
     }
 }
 
