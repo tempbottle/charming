@@ -46,7 +46,7 @@ impl WasmRenderer {
             })
             .unwrap(),
         );
-        echarts.set_option(to_value(chart).unwrap());
+        echarts.set_option(to_value(chart).unwrap(), to_value(&Opts::default()).unwrap());
 
         Ok(echarts)
     }
@@ -58,7 +58,28 @@ impl WasmRenderer {
     }
 
     pub fn update(echarts: &Echarts, chart: &Chart) {
-        echarts.set_option(to_value(chart).unwrap());
+        echarts.set_option(to_value(chart).unwrap(), to_value(&Opts::default()).unwrap());
+    }
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Opts {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    notMerge: Option<bool>,
+}
+
+impl Opts {
+    pub fn new() -> Opts {
+        Opts {
+            notMerge: Some(false),
+        }
+    }
+}
+
+impl Default for Opts {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -154,7 +175,7 @@ extern "C" {
     fn init(id: &web_sys::Element, theme: &str, size: JsValue) -> Echarts;
 
     #[wasm_bindgen(method, js_name = "setOption")]
-    fn set_option(this: &Echarts, option: JsValue);
+    fn set_option(this: &Echarts, option: JsValue, opts: JsValue);
 
     #[wasm_bindgen(method, js_name = "resize")]
     pub fn resize(this: &Echarts, opts: JsValue);
